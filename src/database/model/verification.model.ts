@@ -15,9 +15,13 @@ const verificationSchema = new Schema<VerificationCodeDocument>({
 	code: { type: String, required: true, unique: true, default: generateUniqueCode },
 	type: { type: String, required: true },
 	expiredAt: { type: Date, default: Date.now },
-	createdAt: { type: Date, required: true },
+	createdAt: { type: Date, required: true, default: new Date(Date.now()) },
 });
 
-const VerificationModel = mongoose.model<VerificationCodeDocument>("Verification", verificationSchema, "verification-codes")
+const VerificationModel = mongoose.model<VerificationCodeDocument>(
+	'Verification',
+	verificationSchema,
+	'verification-codes'
+);
 
-export default VerificationModel
+export default VerificationModel;
