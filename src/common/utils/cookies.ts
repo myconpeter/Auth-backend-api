@@ -41,6 +41,6 @@ export const setAuthenticationCookies = ({ res, accessToken, refreshToken }: Coo
 		.cookie('refreshToken', refreshToken, getRefreshTokenCookieOption());
 
 export const clearAuthenticationCookies = (res: Response): Response =>
-	res.clearCookie('accessToken').clearCookie('refreshToke', {
+	res.clearCookie('accessToken').clearCookie('refreshToken', {
 		path: REFRESH_PATH,
 	});

@@ -3,6 +3,7 @@ import { HTTPSTATUS } from '../config/http.config';
 import AppError from '../common/utils/AppError';
 import { z } from 'zod';
 import { clearAuthenticationCookies, REFRESH_PATH } from '../common/utils/cookies';
+import { config } from '../config/app.config';
 
 const formatZodError = (res: Response, error: z.ZodError) => {
 	const errors = error.issues.map((err) => ({
@@ -15,7 +16,9 @@ const formatZodError = (res: Response, error: z.ZodError) => {
 };
 
 const errorHandler: ErrorRequestHandler = (error, req, res, next): any => {
-	console.error(`Error Occurred on PATH ${req.path}`, error);
+	config.NODE_ENV === 'production'
+		? ''
+		: console.error(`Error Occurred on PATH ${req.path}`, error);
 
 	if (req.path === REFRESH_PATH) {
 		clearAuthenticationCookies(res);

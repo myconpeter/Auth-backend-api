@@ -20,11 +20,11 @@ const defaults: SignOptions = {
 };
 
 export const accessTokenSignOptions: SignOptsAndSecret = {
-	expiresIn: config.JWT.EXPIRES_IN as SignOptions['expiresIn'],
+	expiresIn: '1h',
 	secret: config.JWT.SECRET,
 };
 export const refreshTokenSignOptions: SignOptsAndSecret = {
-	expiresIn: config.JWT.JWT_REFRESH_SECRET as SignOptions['expiresIn'],
+	expiresIn: '30d',
 	secret: config.JWT.JWT_REFRESH_SECRET,
 };
 

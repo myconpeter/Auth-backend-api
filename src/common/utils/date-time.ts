@@ -4,11 +4,9 @@ export const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export const thirtyDaysFromNow = (): Date => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-export const fortyMinutesFromNow = (): Date => {
-	const now = new Date();
-	now.setMinutes(now.getMinutes() + 45);
-	return now;
-};
+export const fortyMinutesFromNow = (): Date => new Date(Date.now() + 40 * 60 * 1000);
+
+export const anHourFromNow = (): Date => new Date(Date.now() + 60 * 60 * 1000);
 
 export const calculateExpirationDate = (expires: string = '15m') => {
 	const match = expires.match(/^(\d+)([mhd])$/);
@@ -31,3 +29,5 @@ export const calculateExpirationDate = (expires: string = '15m') => {
 			throw new Error('Invalid Unit');
 	}
 };
+
+export const threeMinutesAgo = (): Date => new Date(Date.now() - 3 * 60 * 1000);

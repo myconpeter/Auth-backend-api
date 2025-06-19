@@ -2,7 +2,13 @@ import { Request, Response } from 'express';
 import { asyncHandler } from '../../middlewares/asyncHandler';
 import { AuthService } from './auth.service';
 import { HTTPSTATUS } from '../../config/http.config';
-import { loginSchema, registerSchema } from '../../common/validators/auth.validator';
+import {
+	emailSchema,
+	loginSchema,
+	registerSchema,
+	resetPasswordSchema,
+	verificationEmailSchema,
+} from '../../common/validators/auth.validator';
 import {
 	getAccessTokenCookieOption,
 	getRefreshTokenCookieOption,
@@ -63,5 +69,24 @@ export class AuthController {
 			.json({
 				message: 'Refresh Access Token Successfully',
 			});
+	});
+
+	public verifyEmail = asyncHandler(async (req: Request, res: Response): Promise<any> => {
+		const { code } = verificationEmailSchema.parse(req.body);
+
+		await this.authService.verifyEmail(code);
+
+		return res.status(HTTPSTATUS.OK).json({
+			message: 'Email Verified Successfully',
+		});
+	});
+
+	public forgetPassword = asyncHandler(async (req: Request, res: Response): Promise<any> => {
+		const email = emailSchema.parse(req.body.email);
+		await this.authService.forgetPassword(email);
+
+		return res.status(HTTPSTATUS.OK).json({
+			message: 'Password Reset Link Sent',
+		});
 	});
 }

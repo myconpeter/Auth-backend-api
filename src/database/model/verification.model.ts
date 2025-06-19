@@ -6,7 +6,7 @@ export interface VerificationCodeDocument extends Document {
 	userId: mongoose.Types.ObjectId;
 	code: string;
 	type: VerificationEnum;
-	expiredAt: Date;
+	expiresAt: Date;
 	createdAt: Date;
 }
 
@@ -14,7 +14,7 @@ const verificationSchema = new Schema<VerificationCodeDocument>({
 	userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
 	code: { type: String, required: true, unique: true, default: generateUniqueCode },
 	type: { type: String, required: true },
-	expiredAt: { type: Date, default: Date.now },
+	expiresAt: { type: Date, default: new Date() },
 	createdAt: { type: Date, required: true, default: new Date(Date.now()) },
 });
 
