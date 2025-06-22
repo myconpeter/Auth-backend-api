@@ -1,6 +1,6 @@
 import { ErrorCode } from '../../common/enums/error-code.enum';
 import { VerificationEnum } from '../../common/enums/verification-code.enum';
-import { LoginDto, RegisterDto } from '../../common/interfaces/auth.interface';
+import { LoginDto, RegisterDto, resetPasswordDto } from '../../common/interfaces/auth.interface';
 import {
 	BadRequestException,
 	HttpException,
@@ -29,6 +29,7 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import { sendEmail } from '../../mailers/mailer';
 import { passwordResetTemplate, verifyEmailTemplate } from '../../mailers/templates/template';
 import { HTTPSTATUS } from '../../config/http.config';
+import { hashValue } from '../../common/utils/bcrypt';
 
 export class AuthService {
 	public async register(registerData: RegisterDto) {
@@ -231,5 +232,38 @@ export class AuthService {
 			url: resetLink,
 			emailId: data.id,
 		};
+	}
+
+	public async resetPassword({ password, verificationCode }: resetPasswordDto) {
+		const validCode = await VerificationModel.findOne({
+			code: verificationCode,
+			type: VerificationEnum.PASSWORD_RESET,
+			expiresAt: { $gt: new Date() },
+		});
+
+		if (!validCode) {
+			throw new NotFoundException('Invalid Credentials');
+		}
+
+		const hashedPassword = await hashValue(password);
+
+		const updatedPassword = await UserModel.findByIdAndUpdate(validCode.userId, {
+			password: hashedPassword,
+		});
+
+		if (!updatedPassword) {
+			throw new BadRequestException('Failed to reset password');
+		}
+
+		await validCode.deleteOne();
+		await SessionModel.deleteMany({ userId: updatedPassword._id });
+
+		return {
+			updatedPassword,
+		};
+	}
+
+	public async logout(sessionId: string) {
+		return await SessionModel.findByIdAndDelete(sessionId);
 	}
 }

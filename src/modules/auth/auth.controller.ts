@@ -10,11 +10,12 @@ import {
 	verificationEmailSchema,
 } from '../../common/validators/auth.validator';
 import {
+	clearAuthenticationCookies,
 	getAccessTokenCookieOption,
 	getRefreshTokenCookieOption,
 	setAuthenticationCookies,
 } from '../../common/utils/cookies';
-import { UnauthorizedException } from '../../common/utils/catch-errors';
+import { NotFoundException, UnauthorizedException } from '../../common/utils/catch-errors';
 import { ErrorCode } from '../../common/enums/error-code.enum';
 
 export class AuthController {
@@ -87,6 +88,29 @@ export class AuthController {
 
 		return res.status(HTTPSTATUS.OK).json({
 			message: 'Password Reset Link Sent',
+		});
+	});
+
+	public resetPassword = asyncHandler(async (req: Request, res: Response): Promise<any> => {
+		const body = resetPasswordSchema.parse(req.body);
+
+		await this.authService.resetPassword(body);
+
+		return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+			message: 'Reset Password Successful',
+		});
+	});
+
+	public logout = asyncHandler(async (req: Request, res: Response): Promise<any> => {
+		const sessionId = req.sessionId;
+		if (!sessionId) {
+			throw new NotFoundException('Session is invalid');
+		}
+
+		await this.authService.logout(sessionId);
+
+		return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+			message: 'User Logout Successful',
 		});
 	});
 }
