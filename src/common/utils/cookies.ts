@@ -37,7 +37,7 @@ export const getAccessTokenCookieOption = (): CookieOptions => {
 
 export const setAuthenticationCookies = ({ res, accessToken, refreshToken }: CookiePayLoadType) =>
 	res
-		.cookie('assessToken', accessToken, getAccessTokenCookieOption())
+		.cookie('accessToken', accessToken, getAccessTokenCookieOption())
 		.cookie('refreshToken', refreshToken, getRefreshTokenCookieOption());
 
 export const clearAuthenticationCookies = (res: Response): Response =>

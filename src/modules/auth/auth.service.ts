@@ -92,6 +92,8 @@ export class AuthService {
 			);
 		}
 
+		// check if user enable 2fa
+
 		const session = await SessionModel.create({
 			userId: user._id,
 			userAgent,
