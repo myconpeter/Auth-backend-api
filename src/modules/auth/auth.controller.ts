@@ -40,6 +40,15 @@ export class AuthController {
 		const body = loginSchema.parse({ ...req.body, userAgent });
 
 		const { user, accessToken, refreshToken, mfaRequired } = await this.authService.login(body);
+
+		if (mfaRequired) {
+			return res.status(HTTPSTATUS.OK).json({
+				message: 'MFA Required Here',
+				mfaRequired,
+				user,
+			});
+		}
+
 		return setAuthenticationCookies({ res, accessToken, refreshToken })
 			.status(HTTPSTATUS.OK)
 			.json({
