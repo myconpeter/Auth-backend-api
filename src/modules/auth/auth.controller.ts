@@ -3,123 +3,148 @@ import { asyncHandler } from '../../middlewares/asyncHandler';
 import { AuthService } from './auth.service';
 import { HTTPSTATUS } from '../../config/http.config';
 import {
-	emailSchema,
-	loginSchema,
-	registerSchema,
-	resetPasswordSchema,
-	verificationEmailSchema,
+  emailSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+  verificationEmailSchema,
 } from '../../common/validators/auth.validator';
 import {
-	clearAuthenticationCookies,
-	getAccessTokenCookieOption,
-	getRefreshTokenCookieOption,
-	setAuthenticationCookies,
+  clearAuthenticationCookies,
+  getAccessTokenCookieOption,
+  getRefreshTokenCookieOption,
+  setAuthenticationCookies,
 } from '../../common/utils/cookies';
-import { NotFoundException, UnauthorizedException } from '../../common/utils/catch-errors';
+import {
+  NotFoundException,
+  UnauthorizedException,
+} from '../../common/utils/catch-errors';
 import { ErrorCode } from '../../common/enums/error-code.enum';
 
 export class AuthController {
-	private authService: AuthService;
+  private authService: AuthService;
 
-	constructor(authService: AuthService) {
-		this.authService = authService;
-	}
+  constructor(authService: AuthService) {
+    this.authService = authService;
+  }
 
-	public register = asyncHandler(async (req: Request, res: Response): Promise<any> => {
-		const body = registerSchema.parse({ ...req.body });
-		const { user } = await this.authService.register(body);
+  public register = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const body = registerSchema.parse({ ...req.body });
+      const { user } = await this.authService.register(body);
 
-		return res.status(HTTPSTATUS.CREATED).json({
-			message: 'User Created',
-			data: user,
-		});
-	});
+      return res.status(HTTPSTATUS.CREATED).json({
+        message: 'User Created',
+        data: user,
+      });
+    }
+  );
 
-	public login = asyncHandler(async (req: Request, res: Response): Promise<any> => {
-		const userAgent = req.headers['user-agent'];
-		const body = loginSchema.parse({ ...req.body, userAgent });
+  public login = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      console.log('we are here');
+      const userAgent = req.headers['user-agent'];
+      const body = loginSchema.parse({ ...req.body, userAgent });
+      console.log('body', req.body);
 
-		const { user, accessToken, refreshToken, mfaRequired } = await this.authService.login(body);
+      const { user, accessToken, refreshToken, mfaRequired } =
+        await this.authService.login(body);
 
-		if (mfaRequired) {
-			return res.status(HTTPSTATUS.OK).json({
-				message: 'MFA Required Here',
-				mfaRequired,
-				user,
-			});
-		}
+      if (mfaRequired) {
+        return res.status(HTTPSTATUS.OK).json({
+          message: 'MFA Required Here',
+          mfaRequired,
+          user,
+        });
+      }
 
-		return setAuthenticationCookies({ res, accessToken, refreshToken })
-			.status(HTTPSTATUS.OK)
-			.json({
-				message: 'User Login Successfully',
-				mfaRequired,
-				user,
-			});
-	});
+      return setAuthenticationCookies({ res, accessToken, refreshToken })
+        .status(HTTPSTATUS.OK)
+        .json({
+          message: 'User Login Successfully',
+          mfaRequired,
+          user,
+        });
+    }
+  );
 
-	public refreshToken = asyncHandler(async (req: Request, res: Response): Promise<any> => {
-		const refreshToken = req.cookies.refreshToken as string | undefined;
-		if (!refreshToken) {
-			throw new UnauthorizedException(
-				'Authorization not permitted',
-				ErrorCode.ACCESS_FORBIDDEN
-			);
-		}
+  public refreshToken = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const refreshToken = req.cookies.refreshToken as string | undefined;
+      if (!refreshToken) {
+        throw new UnauthorizedException(
+          'Authorization not permitted',
+          ErrorCode.ACCESS_FORBIDDEN
+        );
+      }
 
-		const { accessToken, newRefreshToken } = await this.authService.refreshToken(refreshToken);
+      const { accessToken, newRefreshToken } =
+        await this.authService.refreshToken(refreshToken);
 
-		if (newRefreshToken) {
-			res.cookie('refreshToken', newRefreshToken, getRefreshTokenCookieOption());
-		}
+      if (newRefreshToken) {
+        res.cookie(
+          'refreshToken',
+          newRefreshToken,
+          getRefreshTokenCookieOption()
+        );
+      }
 
-		return res
-			.status(HTTPSTATUS.OK)
-			.cookie('accessToken', accessToken, getAccessTokenCookieOption())
-			.json({
-				message: 'Refresh Access Token Successfully',
-			});
-	});
+      return res
+        .status(HTTPSTATUS.OK)
+        .cookie('accessToken', accessToken, getAccessTokenCookieOption())
+        .json({
+          message: 'Refresh Access Token Successfully',
+        });
+    }
+  );
 
-	public verifyEmail = asyncHandler(async (req: Request, res: Response): Promise<any> => {
-		const { code } = verificationEmailSchema.parse(req.body);
+  public verifyEmail = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const { code } = verificationEmailSchema.parse(req.body);
 
-		await this.authService.verifyEmail(code);
+      await this.authService.verifyEmail(code);
 
-		return res.status(HTTPSTATUS.OK).json({
-			message: 'Email Verified Successfully',
-		});
-	});
+      return res.status(HTTPSTATUS.OK).json({
+        message: 'Email Verified Successfully',
+      });
+    }
+  );
 
-	public forgetPassword = asyncHandler(async (req: Request, res: Response): Promise<any> => {
-		const email = emailSchema.parse(req.body.email);
-		await this.authService.forgetPassword(email);
+  public forgetPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const email = emailSchema.parse(req.body.email);
+      await this.authService.forgetPassword(email);
 
-		return res.status(HTTPSTATUS.OK).json({
-			message: 'Password Reset Link Sent',
-		});
-	});
+      return res.status(HTTPSTATUS.OK).json({
+        message: 'Password Reset Link Sent',
+      });
+    }
+  );
 
-	public resetPassword = asyncHandler(async (req: Request, res: Response): Promise<any> => {
-		const body = resetPasswordSchema.parse(req.body);
+  public resetPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const body = resetPasswordSchema.parse(req.body);
 
-		await this.authService.resetPassword(body);
+      await this.authService.resetPassword(body);
 
-		return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
-			message: 'Reset Password Successful',
-		});
-	});
+      return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+        message: 'Reset Password Successful',
+      });
+    }
+  );
 
-	public logout = asyncHandler(async (req: Request, res: Response): Promise<any> => {
-		const sessionId = req.sessionId;
-		if (!sessionId) {
-			throw new NotFoundException('Session is invalid');
-		}
+  public logout = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const sessionId = req.sessionId;
+      if (!sessionId) {
+        throw new NotFoundException('Session is invalid');
+      }
 
-		await this.authService.logout(sessionId);
+      await this.authService.logout(sessionId);
 
-		return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
-			message: 'User Logout Successful',
-		});
-	});
+      return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+        message: 'User Logout Successful',
+      });
+    }
+  );
 }
