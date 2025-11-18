@@ -1,4 +1,4 @@
-{
+export default {
   "env": {
     "node": true,
     "es2021": true,
@@ -14,14 +14,14 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "prettier"],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
   "rules": {
     "prettier/prettier": "error",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { "argsIgnorePattern": "^_" }
-    ],
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": "off"
   },
   "ignorePatterns": ["dist", "node_modules", "*.js"]
