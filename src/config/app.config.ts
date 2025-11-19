@@ -23,8 +23,8 @@ const appConfig = () => ({
   },
 
   GOOGLE: {
-    CLIENT_ID: getEnv('GOOGLE_CLIENT_ID'),
-    CLIENT_SECRET: getEnv('GOOGLE_CLIENT_SECRET'),
+    CLIENT_ID: getEnv('GOOGLE_CLIENT_ID', 'www'),
+    CLIENT_SECRET: getEnv('GOOGLE_CLIENT_SECRET', 'www'),
     CALLBACK_URL: getEnv(
       'GOOGLE_CALLBACK_URL',
       'http://localhost:5000/api/v1/auth/google/callback'
