@@ -7,7 +7,10 @@ import compression from 'compression';
 import { Application } from 'express';
 
 export function applySecurityMiddlewares(app: Application) {
-  app.enable('trust proxy');
+  // IMPORTANT: Set trust proxy to a number instead of 'true'
+  // 1 = trust first proxy (Cloudflare, nginx, etc.)
+  // Adjust based on your infrastructure
+  app.set('trust proxy', 1);
   app.disable('x-powered-by');
 
   // Security headers
@@ -47,17 +50,18 @@ export function applySecurityMiddlewares(app: Application) {
   app.use(hpp());
   app.use(compression());
 
-  // Rate limiting
+  // Rate limiting with proper validation configuration
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 mins
     max: process.env.NODE_ENV === 'production' ? 100 : 1000,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Too many requests, please try again later.' },
+    // Disable the strict trust proxy validation
+    validate: {
+      trustProxy: false,
+      xForwardedForHeader: false,
+    },
   });
   app.use('/api/', limiter); // Apply only to /api routes
-
-  // Body parsing should come AFTER security middlewares
-  //   app.use(express.json({ limit: '10mb' }));
-  //   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 }

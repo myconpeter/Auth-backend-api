@@ -21,6 +21,7 @@ import {
 } from '../../common/utils/catch-errors';
 import { ErrorCode } from '../../common/enums/error-code.enum';
 import logger from '../../middlewares/logger';
+import { config } from '../../config/app.config';
 
 export class AuthController {
   private authService: AuthService;
@@ -64,6 +65,38 @@ export class AuthController {
           mfaRequired,
           user,
         });
+    }
+  );
+
+  public googleAuth = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      // This route is handled by passport, just triggers the Google OAuth flow
+    }
+  );
+
+  public googleAuthCallback = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const userAgent = req.headers['user-agent'] || '';
+      const user = req.user as any;
+
+      if (!user) {
+        // Redirect to frontend with error
+        return res.redirect(`${config.APP_ORIGIN}/login?error=oauth_failed`);
+      }
+
+      const { accessToken, refreshToken, mfaRequired } =
+        await this.authService.handleGoogleOAuth(user, userAgent);
+
+      if (mfaRequired) {
+        // Store user info temporarily and redirect to MFA page
+        return res.redirect(`${config.APP_ORIGIN}/mfa?required=true`);
+      }
+
+      // Set cookies and redirect to frontend
+      setAuthenticationCookies({ res, accessToken, refreshToken });
+
+      // Redirect to frontend dashboard or home page
+      return res.redirect(`${config.APP_ORIGIN}/home`);
     }
   );
 

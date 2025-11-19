@@ -15,6 +15,21 @@ const appConfig = () => ({
     JWT_REFRESH_SECRET: getEnv('JWT_REFRESH_SECRET'),
     JWT_REFRESH_EXPIRES_IN: getEnv('JWT_REFRESH_EXPIRES_IN'),
   },
+
+  REDIS: {
+    HOST: getEnv('REDIS_HOST', 'localhost'),
+    PORT: parseInt(getEnv('REDIS_PORT', '6379')),
+    PASSWORD: getEnv('REDIS_PASSWORD', ''),
+  },
+
+  GOOGLE: {
+    CLIENT_ID: getEnv('GOOGLE_CLIENT_ID'),
+    CLIENT_SECRET: getEnv('GOOGLE_CLIENT_SECRET'),
+    CALLBACK_URL: getEnv(
+      'GOOGLE_CALLBACK_URL',
+      'http://localhost:5000/api/v1/auth/google/callback'
+    ),
+  },
 });
 
 export const config = appConfig();
