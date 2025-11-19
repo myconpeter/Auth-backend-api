@@ -18,6 +18,9 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testTimeout: 10000,
-  // Load test environment variables
   setupFiles: ['<rootDir>/src/__tests__/setupEnv.ts'],
+
+  // Add these to force Jest to exit
+  forceExit: true,
+  detectOpenHandles: true,
 };

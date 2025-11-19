@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --coverage --forceExit",
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=__tests__",
+    "test:debug": "jest --detectOpenHandles --runInBand",
     "start": "node dist/index.js",
     "dev": "ts-node-dev --files src/index.ts",
     "build": "tsc && cp ./package.json ./dist",
