@@ -20,6 +20,7 @@ import {
   UnauthorizedException,
 } from '../../common/utils/catch-errors';
 import { ErrorCode } from '../../common/enums/error-code.enum';
+import logger from '../../middlewares/logger';
 
 export class AuthController {
   private authService: AuthService;
@@ -42,10 +43,8 @@ export class AuthController {
 
   public login = asyncHandler(
     async (req: Request, res: Response): Promise<any> => {
-      console.log('we are here');
       const userAgent = req.headers['user-agent'];
       const body = loginSchema.parse({ ...req.body, userAgent });
-      console.log('body', req.body);
 
       const { user, accessToken, refreshToken, mfaRequired } =
         await this.authService.login(body);
