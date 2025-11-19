@@ -31,7 +31,9 @@ export function applySecurityMiddlewares(app: Application) {
   const allowedOrigins = [
     'https://whudey.com',
     'https://www.whudey.com',
-    'http://localhost:3000', // dev
+    'http://localhost:3000',
+    'https://squeezy-frontend.vercel.app',
+    // dev
   ];
 
   app.use(
