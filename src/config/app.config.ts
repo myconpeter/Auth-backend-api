@@ -19,7 +19,7 @@ const appConfig = () => ({
   REDIS: {
     HOST: getEnv('REDIS_HOST', 'localhost'),
     PORT: parseInt(getEnv('REDIS_PORT', '6379')),
-    PASSWORD: getEnv('REDIS_PASSWORD', ''),
+    PASSWORD: getEnv('REDIS_PASSWORD', 'weo'),
   },
 
   GOOGLE: {
