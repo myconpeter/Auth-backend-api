@@ -199,7 +199,7 @@ authRoutes.post('/verify/email', authController.verifyEmail);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-authRoutes.post('/password/forget', authController.forgetPassword);
+authRoutes.post('/password/forgot', authController.forgetPassword);
 
 /**
  * @swagger
