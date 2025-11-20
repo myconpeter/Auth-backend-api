@@ -12,8 +12,9 @@ export const REFRESH_PATH = `${config.BASE_PATH}/auth/refresh`;
 
 const defaults: CookieOptions = {
   httpOnly: true,
-  secure: config.NODE_ENV === 'production' ? true : false,
-  sameSite: 'none',
+  secure: true, // Always true in production
+  sameSite: 'lax', // Changed from 'none'
+  domain: '.stockinvest.online', // THIS IS THE KEY - the dot allows all subdomains
 };
 
 export const getRefreshTokenCookieOption = (): CookieOptions => {
@@ -25,6 +26,7 @@ export const getRefreshTokenCookieOption = (): CookieOptions => {
     path: REFRESH_PATH,
   };
 };
+
 export const getAccessTokenCookieOption = (): CookieOptions => {
   const expiresIn = config.JWT.EXPIRES_IN;
   const expires = calculateExpirationDate(expiresIn);
