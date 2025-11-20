@@ -17,7 +17,7 @@ const defaults: CookieOptions = {
   domain: '.stockinvest.online', // THIS IS THE KEY - the dot allows all subdomains
 };
 
-// just comment
+// just commen
 
 export const getRefreshTokenCookieOption = (): CookieOptions => {
   const expiresIn = config.JWT.JWT_REFRESH_EXPIRES_IN;
