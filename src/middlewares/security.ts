@@ -29,8 +29,8 @@ export function applySecurityMiddlewares(app: Application) {
 
   // CORS
   const allowedOrigins = [
-    'https://whudey.com',
-    'https://www.whudey.com',
+    'https://stockinvest.online',
+    'https://www.stockinvest.online/',
     'http://localhost:3000',
     'https://squeezy-frontend.vercel.app',
     // dev
